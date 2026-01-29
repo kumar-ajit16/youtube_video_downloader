@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 420px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+        .msg {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>YouTube Video Downloader</h2>
+
+    <form id="downloadForm">
+        <input type="text" name="url" id="url" placeholder="Paste YouTube link" required>
+        <button type="submit" id="btn">Download</button>
+    </form>
+
+    <div class="msg" id="msg"></div>
+</div>
+
+<script>
+const form = document.getElementById("downloadForm");
+const btn = document.getElementById("btn");
+const msg = document.getElementById("msg");
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    btn.disabled = true;
+    btn.innerText = "Downloading...";
+    msg.innerText = "";
+
+    const formData = new FormData(form);
+
+    try {
+        const res = await fetch("/download", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+            msg.innerText = "Video downloaded ✅";
+        } else {
+            msg.innerText = "Download failed ❌";
+        }
+    } catch (err) {
+        msg.innerText = "Server error ❌";
+    }
+
+    btn.disabled = false;
+    btn.innerText = "Download";
+});
+</script>
+</body>
+</html>
